@@ -13,6 +13,14 @@
         <textarea id="matrixInput" placeholder="1,2,3;4,5,6;7,8,9"></textarea>
         <br>
         <button onclick="visualizeMatrix()">Visualize Matrix</button>
+        <button onclick="generateRandomMatrix()">Generate Random Matrix</button>
+    </div>
+    <div id="editSection">
+        <input type="number" id="rowInput" placeholder="Row">
+        <input type="number" id="colInput" placeholder="Column">
+        <input type="number" id="valueInput" placeholder="Value">
+        <button onclick="addElement()">Add Element</button>
+        <button onclick="removeElement()">Remove Element</button>
     </div>
     <div id="operationsSection">
         <button onclick="highlightMainDiagonal()">Highlight Main Diagonal</button>
@@ -21,7 +29,8 @@
         <button onclick="rotateMatrix()">Rotate 90° Clockwise</button>
     </div>
     <div id="matrix"></div>
-
+    <div id="messageBox"></div>
+    
     <script src="m.js"></script>
 </body>
 </html>

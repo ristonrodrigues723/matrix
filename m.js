@@ -6,6 +6,7 @@ function visualizeMatrix() {
     currentMatrix = rows.map(row => row.split(',').map(Number));
     
     renderMatrix();
+    displayMessage("Matrix visualized.");
 }
 
 function renderMatrix() {
@@ -29,6 +30,7 @@ function editCell(row, col) {
     if (newValue !== null) {
         currentMatrix[row][col] = Number(newValue);
         renderMatrix();
+        displayMessage(`Cell [${row}][${col}] updated to ${newValue}.`);
     }
 }
 
@@ -43,6 +45,7 @@ function highlightMainDiagonal() {
             cell.classList.remove('highlighted');
         }
     });
+    displayMessage("Main diagonal highlighted.");
 }
 
 function highlightSecondaryDiagonal() {
@@ -56,11 +59,13 @@ function highlightSecondaryDiagonal() {
             cell.classList.remove('highlighted');
         }
     });
+    displayMessage("Secondary diagonal highlighted.");
 }
 
 function transposeMatrix() {
     currentMatrix = currentMatrix[0].map((_, colIndex) => currentMatrix.map(row => row[colIndex]));
     renderMatrix();
+    displayMessage("Matrix transposed.");
 }
 
 function rotateMatrix() {
@@ -68,4 +73,66 @@ function rotateMatrix() {
         currentMatrix.map(row => row[index]).reverse()
     );
     renderMatrix();
+    displayMessage("Matrix rotated 90° clockwise.");
 }
+
+function generateRandomMatrix() {
+    const rows = Math.floor(Math.random() * 5) + 2;  // 2 to 6 rows
+    const cols = Math.floor(Math.random() * 5) + 2;  // 2 to 6 columns
+    currentMatrix = Array.from({length: rows}, () => 
+        Array.from({length: cols}, () => Math.floor(Math.random() * 10))
+    );
+    renderMatrix();
+    displayMessage(`Random ${rows}x${cols} matrix generated.`);
+}
+
+function addElement() {
+    const row = parseInt(document.getElementById('rowInput').value);
+    const col = parseInt(document.getElementById('colInput').value);
+    const value = parseInt(document.getElementById('valueInput').value);
+
+    if (isNaN(row) || isNaN(col) || isNaN(value)) {
+        displayMessage("Please enter valid numbers for row, column, and value.");
+        return;
+    }
+
+    // Expand matrix if necessary
+    while (currentMatrix.length <= row) {
+        currentMatrix.push([]);
+    }
+    while (currentMatrix[row].length <= col) {
+        currentMatrix[row].push(0);
+    }
+
+    currentMatrix[row][col] = value;
+    renderMatrix();
+    displayMessage(`Added value ${value} at position [${row}][${col}].`);
+}
+
+function removeElement() {
+    const row = parseInt(document.getElementById('rowInput').value);
+    const col = parseInt(document.getElementById('colInput').value);
+
+    if (isNaN(row) || isNaN(col)) {
+        displayMessage("Please enter valid numbers for row and column.");
+        return;
+    }
+
+    if (row >= currentMatrix.length || col >= currentMatrix[0].length) {
+        displayMessage("The specified position does not exist in the matrix.");
+        return;
+    }
+
+    currentMatrix[row][col] = 0;  // Set to 0 instead of removing to maintain matrix structure
+    renderMatrix();
+    displayMessage(`Removed element at position [${row}][${col}].`);
+}
+
+function displayMessage(message) {
+    const messageBox = document.getElementById('messageBox');
+    messageBox.textContent = message;
+}
+
+// Initialize with an empty matrix
+currentMatrix = [[0]];
+renderMatrix();
