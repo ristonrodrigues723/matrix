@@ -77,8 +77,8 @@ function rotateMatrix() {
 }
 
 function generateRandomMatrix() {
-    const rows = Math.floor(Math.random() * 5) + 2;  // 2 to 6 rows
-    const cols = Math.floor(Math.random() * 5) + 2;  // 2 to 6 columns
+    const rows = Math.floor(Math.random() * 3) + 2;  // 2 to 4 rows
+    const cols = Math.floor(Math.random() * 3) + 2;  // 2 to 4 columns
     currentMatrix = Array.from({length: rows}, () => 
         Array.from({length: cols}, () => Math.floor(Math.random() * 10))
     );
@@ -133,6 +133,43 @@ function displayMessage(message) {
     messageBox.textContent = message;
 }
 
-// Initialize with an empty matrix
-currentMatrix = [[0]];
-renderMatrix();
+// New functions
+
+function addMatrix() {
+    const secondMatrix = prompt("Enter the second matrix (use the same format as input):").split(';').map(row => row.split(',').map(Number));
+    if (currentMatrix.length !== secondMatrix.length || currentMatrix[0].length !== secondMatrix[0].length) {
+        displayMessage("Matrices must have the same dimensions for addition.");
+        return;
+    }
+    currentMatrix = currentMatrix.map((row, i) => row.map((val, j) => val + secondMatrix[i][j]));
+    renderMatrix();
+    displayMessage("Matrices added successfully.");
+}
+
+function multiplyMatrix() {
+    const secondMatrix = prompt("Enter the second matrix (use the same format as input):").split(';').map(row => row.split(',').map(Number));
+    if (currentMatrix[0].length !== secondMatrix.length) {
+        displayMessage("Number of columns in the first matrix must equal the number of rows in the second matrix.");
+        return;
+    }
+    const result = [];
+    for (let i = 0; i < currentMatrix.length; i++) {
+        result[i] = [];
+        for (let j = 0; j < secondMatrix[0].length; j++) {
+            result[i][j] = currentMatrix[i].reduce((sum, element, k) => sum + element * secondMatrix[k][j], 0);
+        }
+    }
+    currentMatrix = result;
+    renderMatrix();
+    displayMessage("Matrices multiplied successfully.");
+}
+
+function calculateDeterminant() {
+    if (currentMatrix.length !== currentMatrix[0].length) {
+        displayMessage("Determinant can only be calculated for square matrices.");
+        return;
+    }
+    const det = determinant(currentMatrix);
+    displayMessage(`The determinant is: ${det}`);
+}
+
