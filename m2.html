@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Generator and Editor</title>
+    <link rel="stylesheet" href="m2.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Matrix Generator and Editor</h2>
+        <div>
+            <input type="number" id="rows" min="1" placeholder="Rows">
+            <input type="number" id="cols" min="1" placeholder="Columns">
+            <button onclick="generateMatrix()">Generate Random Matrix</button>
+        </div>
+        <div id="matrixContainer"></div>
+        <div id="addElementContainer" style="display: none;">
+            <h3>Add Element</h3>
+            <input type="number" id="rowInput" min="0" placeholder="Row">
+            <input type="number" id="colInput" min="0" placeholder="Column">
+            <input type="number" id="valueInput" placeholder="Value">
+            <button onclick="addElement()">Add Element</button>
+        </div>
+    </div>
+    <script src="m2.js"></script>
+</body>
+</html>

@@ -1,117 +1,76 @@
 body {
     font-family: Arial, sans-serif;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    margin: 0;
     background-color: #f0f0f0;
-}
-
-.container {
-    text-align: center;
-    height: fit-content;
-    width: 1000px;
-    background-color: white;
-    box-shadow: 8px 8px 20px rgb(128, 128, 128);
-    border-radius: 20px;
-    margin: 20px 50px;
-    padding: 20px;
 }
 
 #inputSection, #editSection, #operationsSection {
     margin-bottom: 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 #matrixInput {
-    width: 400px;
-    height: 50px;
-    font-size: 25px;
-    border-radius: 10px;
-    padding-left: 20px;
-    padding-right: 5px;
-    margin-bottom: 15px;
+    width: 300px;
+    height: 100px;
 }
 
 #matrix {
     display: inline-grid;
     gap: 1px;
-    background-color: #333;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    background-color: #ddd;
+    padding: 1px;
+    border-radius: 4px;
 }
 
 .cell {
     width: 40px;
     height: 40px;
-    background-color: #4CAF50;
-    color: white;
+    background-color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
 .cell:hover {
-    background-color: #45a049;
+    background-color: #e0e0e0;
 }
 
 .highlighted {
     background-color: #ffff00;
-    color: #333;
 }
 
 button {
-    height: 50px;
-    width: 140px;
-    font-size: 20px;
-    background-color: #3498db;
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s;
-    border: none;
     margin: 5px;
+    padding: 5px 10px;
+    background-color: #4c75af;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 button:hover {
-    background-color: #2980b9;
-}
-
-button:active {
-    transform: scale(0.95);
+    background-color: #1648b2;
 }
 
 input[type="number"] {
-    height: 50px;
-    width: 100px;
-    font-size: 20px;
-    border-radius: 10px;
-    padding-left: 10px;
+    width: 50px;
     margin-right: 5px;
 }
 
 #messageBox {
-    width: 100%;
     margin-top: 20px;
     padding: 10px;
-    background-color: #f8f8f8;
-    border-radius: 10px;
-    border: 1px solid black;
-    min-height: 50px;
-    font-size: 16px;
-    text-align: left;
-    overflow-y: auto;
-}
-
-.info-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 20px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    max-width: 300px;
+    min-height: 100px;
 }
