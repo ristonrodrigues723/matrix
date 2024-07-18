@@ -23,14 +23,14 @@ function generateMatrix() {
 }
 
 function updateMatrix(row, col, value) {
-    matrix[row][col] = parseInt(value);
+    matrix[row][col] = parseFloat(value);
     showMessage(`Updated matrix[${row}][${col}] = ${value}`);
 }
 
 function addElement() {
     const row = parseInt(document.getElementById('rowInput').value);
     const col = parseInt(document.getElementById('colInput').value);
-    const value = parseInt(document.getElementById('valueInput').value);
+    const value = parseFloat(document.getElementById('valueInput').value);
 
     if (isNaN(row) || isNaN(col) || isNaN(value)) {
         showMessage("Please enter valid row, column, and value.");
@@ -85,26 +85,23 @@ function inverseMatrix() {
         return;
     }
 
-    if (matrix.length === 2 && matrix[0].length === 2) {
-        let a = matrix[0][0], b = matrix[0][1],
-            c = matrix[1][0], d = matrix[1][1];
-        let determinant = a*d - b*c;
-        
-        if (determinant === 0) {
-            showMessage("This matrix is not invertible.");
-            return;
-        }
-
-        let inverse = [
-            [d/determinant, -b/determinant],
-            [-c/determinant, a/determinant]
-        ];
-
-        updateMatrixDisplay(inverse);
-        showMessage("Inverse calculated and displayed.");
-    } else {
-        showMessage("Inverse calculation is only implemented for 2x2 matrices.");
+    let det = determinant(matrix);
+    if (Math.abs(det) < 1e-10) {
+        showMessage("This matrix is not invertible (determinant is zero).");
+        return;
     }
+
+    let adj = adjoint(matrix);
+    let inverse = [];
+    for (let i = 0; i < matrix.length; i++) {
+        inverse[i] = [];
+        for (let j = 0; j < matrix.length; j++) {
+            inverse[i][j] = adj[i][j] / det;
+        }
+    }
+
+    updateMatrixDisplay(inverse);
+    showMessage("Inverse calculated and displayed.");
 }
 
 function calculateDeterminant() {
@@ -156,7 +153,7 @@ function toRowEchelonForm(m) {
             return result;
         }
         let i = r;
-        while (result[i][lead] === 0) {
+        while (Math.abs(result[i][lead]) < 1e-10) {
             i++;
             if (i === result.length) {
                 i = r;
@@ -184,6 +181,32 @@ function toRowEchelonForm(m) {
         lead++;
     }
     return result;
+}
+
+function adjoint(m) {
+    if (m.length === 1) {
+        return [[1]];
+    }
+    let adj = [];
+    for (let i = 0; i < m.length; i++) {
+        adj[i] = [];
+        for (let j = 0; j < m.length; j++) {
+            let sign = ((i + j) % 2 === 0) ? 1 : -1;
+            adj[i][j] = sign * determinant(subMatrix(m, j, i)); // Note: i and j are swapped for transpose
+        }
+    }
+    return adj;
+}
+
+function calculateAdjoint() {
+    if (matrix.length !== matrix[0].length) {
+        showMessage("Adjoint can only be calculated for square matrices.");
+        return;
+    }
+
+    let adj = adjoint(matrix);
+    updateMatrixDisplay(adj);
+    showMessage("Adjoint calculated and displayed.");
 }
 
 function showMessage(message) {

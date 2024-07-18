@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijkstra's Algorithm Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(10, 30px);
+            gap: 1px;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .start { background-color: green; }
+        .end { background-color: red; }
+        .wall { background-color: black; }
+        .visited { background-color: lightblue; }
+        .path { background-color: yellow; }
+    </style>
+</head>
+<body>
+    <h1>Dijkstra's Algorithm Visualization</h1>
+    <div id="grid"></div>
+    <div>
+        <button id="startBtn">Start Algorithm</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+    <p>Click to set start (green) and end (red) points. Right-click to add/remove walls.</p>
+
+    <script>
+        const grid = document.getElementById('grid');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const rows = 10;
+        const cols = 10;
+        let start = null;
+        let end = null;
+        let cells = [];
+
+        function createGrid() {
+            for (let i = 0; i < rows * cols; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                cell.addEventListener('click', setCellType);
+                cell.addEventListener('contextmenu', toggleWall);
+                grid.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        function setCellType(e) {
+            if (!start) {
+                start = e.target;
+                start.classList.add('start');
+            } else if (!end && e.target !== start) {
+                end = e.target;
+                end.classList.add('end');
+            }
+        }
+
+        function toggleWall(e) {
+            e.preventDefault();
+            if (e.target !== start && e.target !== end) {
+                e.target.classList.toggle('wall');
+            }
+        }
+
+        function resetGrid() {
+            cells.forEach(cell => {
+                cell.className = 'cell';
+            });
+            start = null;
+            end = null;
+        }
+
+        function dijkstra() {
+            if (!start || !end) return;
+
+            const distances = new Array(rows * cols).fill(Infinity);
+            const previous = new Array(rows * cols).fill(null);
+            const unvisited = new Set(cells.map((_, index) => index));
+
+            distances[parseInt(start.dataset.index)] = 0;
+
+            while (unvisited.size > 0) {
+                const current = [...unvisited].reduce((a, b) => distances[a] < distances[b] ? a : b);
+                unvisited.delete(current);
+
+                if (current === parseInt(end.dataset.index)) break;
+
+                const neighbors = getNeighbors(current);
+                for (const neighbor of neighbors) {
+                    if (unvisited.has(neighbor)) {
+                        const alt = distances[current] + 1;
+                        if (alt < distances[neighbor]) {
+                            distances[neighbor] = alt;
+                            previous[neighbor] = current;
+                        }
+                    }
+                }
+
+                if (cells[current] !== start && cells[current] !== end) {
+                    cells[current].classList.add('visited');
+                }
+            }
+
+            const path = [];
+            let current = parseInt(end.dataset.index);
+            while (current !== null) {
+                path.unshift(current);
+                current = previous[current];
+            }
+
+            for (const index of path) {
+                if (cells[index] !== start && cells[index] !== end) {
+                    cells[index].classList.add('path');
+                }
+            }
+        }
+
+        function getNeighbors(index) {
+            const neighbors = [];
+            const row = Math.floor(index / cols);
+            const col = index % cols;
+
+            if (row > 0) neighbors.push(index - cols);
+            if (row < rows - 1) neighbors.push(index + cols);
+            if (col > 0) neighbors.push(index - 1);
+            if (col < cols - 1) neighbors.push(index + 1);
+
+            return neighbors.filter(i => !cells[i].classList.contains('wall'));
+        }
+
+        createGrid();
+        startBtn.addEventListener('click', dijkstra);
+        resetBtn.addEventListener('click', resetGrid);
+    </script>
+</body>
+</html>
