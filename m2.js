@@ -10,20 +10,14 @@ function generateMatrix() {
     }
 
     matrix = [];
-    let matrixHTML = "<table>";
     for (let i = 0; i < rows; i++) {
         matrix[i] = [];
-        matrixHTML += "<tr>";
         for (let j = 0; j < cols; j++) {
-            const randomValue = Math.floor(Math.random() * 10); // Random integer from 0 to 9
-            matrix[i][j] = randomValue;
-            matrixHTML += `<td><input type="number" value="${randomValue}" onchange="updateMatrix(${i}, ${j}, this.value)"></td>`;
+            matrix[i][j] = Math.floor(Math.random() * 10); // Random integer from 0 to 9
         }
-        matrixHTML += "</tr>";
     }
-    matrixHTML += "</table>";
 
-    document.getElementById('matrixContainer').innerHTML = matrixHTML;
+    updateMatrixDisplay(matrix);
     document.getElementById('addElementContainer').style.display = 'block';
     showMessage("Matrix generated successfully.");
 }
@@ -49,16 +43,16 @@ function addElement() {
     }
 
     matrix[row][col] = value;
-    updateMatrixDisplay();
+    updateMatrixDisplay(matrix);
     showMessage(`Element added at matrix[${row}][${col}] = ${value}`);
 }
 
-function updateMatrixDisplay() {
+function updateMatrixDisplay(m) {
     let matrixHTML = "<table>";
-    for (let i = 0; i < matrix.length; i++) {
+    for (let i = 0; i < m.length; i++) {
         matrixHTML += "<tr>";
-        for (let j = 0; j < matrix[i].length; j++) {
-            matrixHTML += `<td><input type="number" value="${matrix[i][j]}" onchange="updateMatrix(${i}, ${j}, this.value)"></td>`;
+        for (let j = 0; j < m[i].length; j++) {
+            matrixHTML += `<td><input type="number" value="${m[i][j]}" onchange="updateMatrix(${i}, ${j}, this.value)"></td>`;
         }
         matrixHTML += "</tr>";
     }
@@ -81,10 +75,8 @@ function transposeMatrix() {
         }
     }
 
-    showMessage("Transpose calculated. Original matrix:");
-    displayMatrix(matrix);
-    showMessage("Transposed matrix:");
-    displayMatrix(transpose);
+    updateMatrixDisplay(transpose);
+    showMessage("Transpose calculated and displayed.");
 }
 
 function inverseMatrix() {
@@ -93,8 +85,6 @@ function inverseMatrix() {
         return;
     }
 
-    // This is a simple implementation for 2x2 matrices
-    // For larger matrices, you'd need a more complex algorithm
     if (matrix.length === 2 && matrix[0].length === 2) {
         let a = matrix[0][0], b = matrix[0][1],
             c = matrix[1][0], d = matrix[1][1];
@@ -110,18 +100,90 @@ function inverseMatrix() {
             [-c/determinant, a/determinant]
         ];
 
-        showMessage("Inverse calculated. Original matrix:");
-        displayMatrix(matrix);
-        showMessage("Inverse matrix:");
-        displayMatrix(inverse);
+        updateMatrixDisplay(inverse);
+        showMessage("Inverse calculated and displayed.");
     } else {
         showMessage("Inverse calculation is only implemented for 2x2 matrices.");
     }
 }
 
-function displayMatrix(m) {
-    let matrixString = m.map(row => row.join(", ")).join("\n");
-    showMessage(matrixString);
+function calculateDeterminant() {
+    if (matrix.length !== matrix[0].length) {
+        showMessage("Determinant can only be calculated for square matrices.");
+        return;
+    }
+
+    let det = determinant(matrix);
+    showMessage(`Determinant of the matrix is ${det}`);
+}
+
+function determinant(m) {
+    if (m.length === 1) {
+        return m[0][0];
+    }
+    if (m.length === 2) {
+        return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+    }
+    let det = 0;
+    for (let i = 0; i < m.length; i++) {
+        det += Math.pow(-1, i) * m[0][i] * determinant(subMatrix(m, 0, i));
+    }
+    return det;
+}
+
+function subMatrix(m, row, col) {
+    return m.slice(1).map(r => r.filter((_, j) => j !== col));
+}
+
+function calculateRank() {
+    let rank = Math.min(matrix.length, matrix[0].length);
+    let rowEchelonForm = toRowEchelonForm(matrix);
+    
+    for (let i = 0; i < rowEchelonForm.length; i++) {
+        if (rowEchelonForm[i].every(val => Math.abs(val) < 1e-10)) {
+            rank--;
+        }
+    }
+    
+    showMessage(`Rank of the matrix is ${rank}`);
+}
+
+function toRowEchelonForm(m) {
+    let result = JSON.parse(JSON.stringify(m)); // Deep copy
+    let lead = 0;
+    for (let r = 0; r < result.length; r++) {
+        if (lead >= result[0].length) {
+            return result;
+        }
+        let i = r;
+        while (result[i][lead] === 0) {
+            i++;
+            if (i === result.length) {
+                i = r;
+                lead++;
+                if (result[0].length === lead) {
+                    return result;
+                }
+            }
+        }
+        let temp = result[i];
+        result[i] = result[r];
+        result[r] = temp;
+        let val = result[r][lead];
+        for (let j = 0; j < result[0].length; j++) {
+            result[r][j] /= val;
+        }
+        for (let i = 0; i < result.length; i++) {
+            if (i !== r) {
+                val = result[i][lead];
+                for (let j = 0; j < result[0].length; j++) {
+                    result[i][j] -= val * result[r][j];
+                }
+            }
+        }
+        lead++;
+    }
+    return result;
 }
 
 function showMessage(message) {
@@ -131,6 +193,5 @@ function showMessage(message) {
         messageBox.id = 'messageBox';
         document.querySelector('.container').appendChild(messageBox);
     }
-    messageBox.innerHTML += message + "<br>";
-    messageBox.scrollTop = messageBox.scrollHeight;
+    messageBox.textContent = message;
 }
